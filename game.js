@@ -37,9 +37,38 @@ class Board {
 
     makePlayerMove(player, row, column) {
         // TODO implement method
+        this._state[row][column] = player;
         return true; 
     }
 
+}
+
+
+class TicTacToe {
+    constructor() {
+        boardSize = prompt("Please enter a number for board size: ");
+        this.board = new Board(boardSize);
+        this.player1 = new Player("X");
+        this.player2 = new Player("O");
+        this.currentPlayer = null;
+    }
+
+    getPlayerMove() {
+        let move = prompt("Please enter row and column: ");
+        this.board.makePlayerMove(this.currentPlayer, move[0], move[1]);
+        this.currentPlayer = switchPlayers();
+    }
+
+    switchPlayers() {
+        if(this.currentPlayer === this.player1)
+            this.currentPlayer = this.player2;
+        else
+            this.currentPlayer = this.player1;
+    }
+
+    play() {
+
+    }
 }
 
 
