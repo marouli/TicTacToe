@@ -22,7 +22,7 @@ class Board {
 
     _makeInitialState() {
         // TODO implement method
-        return [[null, null, null], [null, null, null], [null, null, null]];
+        return [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]];
     }
 
     _checkValidCoordinates(row, column) {
@@ -55,6 +55,17 @@ class TicTacToe {
         this.currentPlayer = null;
     }
 
+    renderBoard() {
+        let columnString = "| ";
+        for (let row of this.board._state) {
+            for (let column of row) {
+                columnString += column + " | ";
+            }
+            console.log(columnString);
+            columnString = "| ";
+        }
+    }
+
     switchPlayers() {
         if(this.currentPlayer === this.player1)
             this.currentPlayer = this.player2;
@@ -72,6 +83,7 @@ class TicTacToe {
     play() {
         this.currentPlayer = this.player1;
         while (true) {
+            this.renderBoard();
             this.getPlayerMove();
             this.switchPlayers();
         }
