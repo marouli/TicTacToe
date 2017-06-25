@@ -17,16 +17,25 @@ class Board {
 
     _checkValidBoardSize(size) {
         // TODO implement method
+        // In case of invalid size throw error
         return size;
     }
 
     _makeInitialState() {
-        // TODO implement method
-        return [[" ", " ", " "], [" ", " ", " "], [" ", " ", " "]];
+        let state = [];
+        for (let x = 0; x < this._size; x++) {
+            let row = [];
+            for (let y = 0; y < this._size; y++) {
+                row.push(" ");
+            }
+            state.push(row);
+        }
+        return state;
     }
 
     _checkValidCoordinates(row, column) {
         // TODO implement method
+        // In case of invalid coords throw error
         return true;
     }    
 
@@ -36,10 +45,16 @@ class Board {
     }
 
     makePlayerMove(player, row, column) {
-        // TODO implement method
-        console.log(row, column);
-        console.log(player);
+        this._checkValidCoordinates(row, column);
         this._state[row][column] = player.symbol;
+        this._possibleMoves--;
+        this._turnCounter++;
+        if (this._turnCounter >= this._possibleWinningMove) {
+            this._checkForWin();
+        }
+        if (this._possibleMoves === 0) {
+            //throw game over error;
+        }
         return true; 
     }
 
@@ -47,12 +62,20 @@ class Board {
 
 
 class TicTacToe {
-    constructor() {
-        let boardSize = prompt("Please enter a number for board size: ");
+    constructor(askBoardSize=false) {
+        let boardSize = this.getBoardSize(askBoardSize);
         this.board = new Board(boardSize);
         this.player1 = new Player("X");
         this.player2 = new Player("O");
         this.currentPlayer = null;
+    }
+
+    getBoardSize(askBoardSize) {
+        let boardSize = 3;
+        if (askBoardSize) {
+            boardSize = prompt("Please enter a number for board size: ");
+        }
+        return boardSize;
     }
 
     renderBoard() {
@@ -75,14 +98,13 @@ class TicTacToe {
 
     getPlayerMove() {
         let move = prompt("Please enter row and column for player " + this.currentPlayer.symbol + ": ");
-        console.log(move);
-        console.log(this.currentPlayer.symbol);
         this.board.makePlayerMove(this.currentPlayer, move[0], move[1]);
     }
 
     play() {
         this.currentPlayer = this.player1;
-        while (true) {
+        let gameOver = false;
+        while (!gameOver) {
             this.renderBoard();
             this.getPlayerMove();
             this.switchPlayers();
