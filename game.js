@@ -37,7 +37,9 @@ class Board {
 
     makePlayerMove(player, row, column) {
         // TODO implement method
-        this._state[row][column] = player;
+        console.log(row, column);
+        console.log(player);
+        this._state[row][column] = player.symbol;
         return true; 
     }
 
@@ -46,17 +48,11 @@ class Board {
 
 class TicTacToe {
     constructor() {
-        boardSize = prompt("Please enter a number for board size: ");
+        let boardSize = prompt("Please enter a number for board size: ");
         this.board = new Board(boardSize);
         this.player1 = new Player("X");
         this.player2 = new Player("O");
         this.currentPlayer = null;
-    }
-
-    getPlayerMove() {
-        let move = prompt("Please enter row and column: ");
-        this.board.makePlayerMove(this.currentPlayer, move[0], move[1]);
-        this.currentPlayer = switchPlayers();
     }
 
     switchPlayers() {
@@ -66,9 +62,20 @@ class TicTacToe {
             this.currentPlayer = this.player1;
     }
 
-    play() {
+    getPlayerMove() {
+        let move = prompt("Please enter row and column for player " + this.currentPlayer.symbol + ": ");
+        console.log(move);
+        console.log(this.currentPlayer.symbol);
+        this.board.makePlayerMove(this.currentPlayer, move[0], move[1]);
+    }
 
+    play() {
+        this.currentPlayer = this.player1;
+        while (true) {
+            this.getPlayerMove();
+            this.switchPlayers();
+        }
     }
 }
 
-
+let game = new TicTacToe;
