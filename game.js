@@ -13,12 +13,19 @@ class Board {
         this._turnCounter = 0;
         this._possibleMoves = size * size;
         this._possibleWinningMove = size * 2 - 1;
+        this._rangeSize = 20;
     }
 
     _checkValidBoardSize(size) {
-        // TODO implement method
         // In case of invalid size throw error
-        return size;
+        if (isNaN(size)) {
+            throw new Error (size + " not a number.");
+        }
+        if (size > this._rangeSize) {
+            throw new Error (size + " is out of range.");
+        } else {
+            return size;
+        } 
     }
 
     _makeInitialState() {
@@ -34,9 +41,15 @@ class Board {
     }
 
     _checkValidCoordinates(row, column) {
-        // TODO implement method
         // In case of invalid coords throw error
-        return true;
+        if (isNaN(row) && isNan(column)) {
+            throw new Error ("Invalid coordinates.");
+        }
+        if (row > this._size && column > this._size) {
+            throw new Error ("Coordinates out of range.");
+        } else {
+            return true;
+        }
     }    
 
     _checkForWin(board) {
@@ -142,10 +155,11 @@ class TicTacToe {
     }
 
     switchPlayers() {
-        if(this.currentPlayer === this.player1)
+        if(this.currentPlayer === this.player1) {
             this.currentPlayer = this.player2;
-        else
+        } else {
             this.currentPlayer = this.player1;
+        }
     }
 
     getPlayerMove() {
