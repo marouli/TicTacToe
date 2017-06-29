@@ -8,20 +8,21 @@ class Player {
 
 class Board {
     constructor(size) {
+        this._rangeSize = 20;
         this._size = this._checkValidBoardSize(size);
         this._state = this._makeInitialState();
         this._turnCounter = 0;
         this._possibleMoves = size * size;
         this._possibleWinningMove = size * 2 - 1;
-        this._rangeSize = 20;
     }
 
     _checkValidBoardSize(size) {
-        // In case of invalid size throw error
+        size = parseInt(size);
+
         if (isNaN(size)) {
             throw new Error (size + " not a number.");
         }
-        if (size > this._rangeSize) {
+        if (size < 3 || size > this._rangeSize) {
             throw new Error (size + " is out of range.");
         } else {
             return size;
@@ -41,22 +42,29 @@ class Board {
     }
 
     _checkValidCoordinates(row, column) {
-        // In case of invalid coords throw error
-        if (isNaN(row) && isNan(column)) {
-            throw new Error ("Invalid coordinates.");
+        row = parseInt(row);
+        column = parseInt(column);
+
+        if (isNaN(row) || isNaN(column)) {
+            throw new Error ("Supplied coordinates not numbers.");
         }
-        if (row > this._size && column > this._size) {
+
+        if (row < 0 || row >= this._size || column < 0 || column >= this._size) {
             throw new Error ("Coordinates out of range.");
+        } 
+        if (this._state[row][column] !== " ") {
+            throw new Error ("Coordinates in use.");
         } else {
             return true;
         }
     }    
 
-    _checkForWin(board) {
+    _checkForWin() {
+        board = this._state;
         // checks rows
         for (let row = 0; row < board.length; row++) {
             let allCellsEqual = true;
-            for (let column = 1; column < board[row].length; column++) {
+            for (let column = 1; column < board.length; column++) {
                 if (board[row][0] !== board[row][column]) {
                     allCellsEqual = false;
                     break;
@@ -113,9 +121,9 @@ class Board {
         this._state[row][column] = player.symbol;
         this._possibleMoves--;
         this._turnCounter++;
-        if (this._turnCounter >= this._possibleWinningMove) {
-            this._checkForWin();
-        }
+        //if (this._turnCounter >= this._possibleWinningMove) {
+          //  this._checkForWin();
+        //}
         if (this._possibleMoves === 0) {
             // TODO the last move is not printed out
             throw new Error ("Game over! It's a draw!");
@@ -128,22 +136,36 @@ class Board {
 
 class TicTacToe {
     constructor(askBoardSize=false) {
-        let boardSize = this.getBoardSize(askBoardSize);
-        this.board = new Board(boardSize);
+        this.board = this._instantiateBoard(askBoardSize);
         this.player1 = new Player("X");
         this.player2 = new Player("O");
         this.currentPlayer = null;
     }
 
-    getBoardSize(askBoardSize) {
+    _instantiateBoard(askBoardSize) {
         let boardSize = 3;
+        let board = null;
         if (askBoardSize) {
-            boardSize = prompt("Please enter a number for board size: ");
+            let validSize = false;
+            while(!validSize) {
+                try {
+                    boardSize = prompt("Please enter a number for board size: ");
+                    board = new Board(boardSize);
+                    validSize = true;
+                }
+                catch(error) {
+                    console.log(error.message);
+                }
+            }
+        } else {
+            board = new Board(boardSize);
         }
-        return boardSize;
+        return board;
     }
 
-    renderBoard() {
+    _renderBoard() {
+        console.clear();
+        console.log("\n\n\n\n\n\n\n\n\n\n\n");
         let columnString = "| ";
         for (let row of this.board._state) {
             for (let column of row) {
@@ -154,7 +176,7 @@ class TicTacToe {
         }
     }
 
-    switchPlayers() {
+    _switchPlayers() {
         if(this.currentPlayer === this.player1) {
             this.currentPlayer = this.player2;
         } else {
@@ -162,7 +184,7 @@ class TicTacToe {
         }
     }
 
-    getPlayerMove() {
+    _getPlayerMove() {
         let move = prompt("Please enter row and column for player " + this.currentPlayer.symbol + ": ");
         this.board.makePlayerMove(this.currentPlayer, move[0], move[1]);
     }
@@ -171,11 +193,28 @@ class TicTacToe {
         this.currentPlayer = this.player1;
         let gameOver = false;
         while (!gameOver) {
-            this.renderBoard();
-            this.getPlayerMove();
-            this.switchPlayers();
+            this._renderBoard();
+
+            let validMove = false;
+            while (!validMove) {
+                try {
+                    this._getPlayerMove();
+                    validMove = true;
+                }
+                catch (error) {
+                    if (error.message === "Game over! It's a draw!") {
+                        gameOver = true;
+                        this._renderBoard();
+                        console.log(error.message);
+                        break;
+                    } else {
+                        console.log(error.message);
+                    }
+                }
+            }
+            this._switchPlayers();
         }
     }
 }
 
-let game = new TicTacToe;
+let game = new TicTacToe(true);
