@@ -13,7 +13,7 @@ class Board {
         this._state = this._makeInitialState();
         this._turnCounter = 0;
         this._possibleMoves = size * size;
-        this._possibleWinningMove = size * 2 - 1;
+        this._possibleWinningMove = (size * 2) - 1;
     }
 
     _checkValidBoardSize(size) {
@@ -60,7 +60,7 @@ class Board {
     }    
 
     _checkForWin() {
-        board = this._state;
+        let board = this._state;
         // checks rows
         for (let row = 0; row < board.length; row++) {
             let allCellsEqual = true;
@@ -70,8 +70,8 @@ class Board {
                     break;
                 } 
             }  
-            if (allCellsEqual && board[row][0] !== null) {
-                return "Winner is " + board[row][0];
+            if (allCellsEqual && board[row][0] !== " ") {
+                throw new Error ("Winner is " + board[row][0]);
             }
         }
 
@@ -84,36 +84,37 @@ class Board {
                     break;
                 } 
             }  
-            if (allCellsEqual && board[0][column] !== null) {
-                return "Winner is " + board[0][column];
+            if (allCellsEqual && board[0][column] !== " ") {
+                throw new Error ("Winner is " + board[0][column]);
             }
         }
 
         // checks diagonal from left
+        let allCellsEqual = true;
         for (let both = 1; both < board.length; both++) {
-            let allCellsEqual = true;
             if (board[both][both] !== board[0][0]) {
                 allCellsEqual = false;
                 break;
-            }  
-            if (allCellsEqual && board[0][0] !== null) {
-                return "Winner is " + board[0][0];
-            }
+            } 
+        } 
+        if (allCellsEqual && board[0][0] !== " ") {
+            throw new Error ("Winner is " + board[0][0]);
         }
 
         // checks diagonal from right
-        let row = board.length-1
+        allCellsEqual = true;
+        let row = board.length-1;
         for (let column = 1; column < board.length; column++) {
-            let allCellsEqual = true;
             if (board[board.length-1][0] !== board[row-1][column]) {
-                row--;
                 allCellsEqual = false;
                 break;
-            }   
-            if (allCellsEqual && board[board.length-1][0] !== null) {
-                return "Winner is " + board[board.length-1][0];
-            }
+            } 
+            row--;
         }
+        if (allCellsEqual && board[board.length-1][0] !== " ") {
+            throw new Error ("Winner is " + board[board.length-1][0]);
+        }
+
     }
 
     makePlayerMove(player, row, column) {
@@ -121,11 +122,10 @@ class Board {
         this._state[row][column] = player.symbol;
         this._possibleMoves--;
         this._turnCounter++;
-        //if (this._turnCounter >= this._possibleWinningMove) {
-          //  this._checkForWin();
-        //}
+        if (this._turnCounter >= this._possibleWinningMove) {
+            this._checkForWin();
+        }
         if (this._possibleMoves === 0) {
-            // TODO the last move is not printed out
             throw new Error ("Game over! It's a draw!");
         }
         return true; 
@@ -136,7 +136,8 @@ class Board {
 
 class TicTacToe {
     constructor(askBoardSize=false) {
-        this.board = this._instantiateBoard(askBoardSize);
+        this.askBoardSize = askBoardSize;
+        this.board = this._instantiateBoard(this.askBoardSize);
         this.player1 = new Player("X");
         this.player2 = new Player("O");
         this.currentPlayer = null;
@@ -202,7 +203,7 @@ class TicTacToe {
                     validMove = true;
                 }
                 catch (error) {
-                    if (error.message === "Game over! It's a draw!") {
+                    if (error.message === "Game over! It's a draw!" || error.message.startsWith("Winner is ")) {
                         gameOver = true;
                         this._renderBoard();
                         console.log(error.message);
@@ -215,6 +216,11 @@ class TicTacToe {
             this._switchPlayers();
         }
     }
+
+    reset() {
+        this.board = this._instantiateBoard(this.askBoardSize);
+        this.currentPlayer = null;
+    }
 }
 
-let game = new TicTacToe(true);
+let game = new TicTacToe;
