@@ -1,14 +1,13 @@
 class Player {
     constructor(symbol) {
         this.symbol = symbol;
-        this.winner = null;
     }
 }
 
 
 class Board {
     constructor(size) {
-        this._rangeSize = 20;
+        this._rangeSize = 9;
         this._size = this._checkValidBoardSize(size);
         this._state = this._makeInitialState();
         this._turnCounter = 0;
@@ -23,7 +22,7 @@ class Board {
             throw new Error (size + " not a number.");
         }
         if (size < 3 || size > this._rangeSize) {
-            throw new Error (size + " is out of range.");
+            throw new Error (size + " is out of range. Allowed maximum size " + this._rangeSize);
         } else {
             return size;
         } 
@@ -223,4 +222,4 @@ class TicTacToe {
     }
 }
 
-let game = new TicTacToe;
+
