@@ -1,16 +1,14 @@
 const prompt = require("syncprompt");
 
-const ticTacToe = require("./ticTacToeLib.js");
-const player = new ticTacToeLib.Player();
-const board = new ticTacToeLib.Board();
+const TicTacToe = require("./ticTacToeLib.js");
 
 
 class Game {
     constructor(askBoardSize=false) {
         this.askBoardSize = askBoardSize;
         this.board = this._instantiateBoard(this.askBoardSize);
-        this.player1 = new Player("X");
-        this.player2 = new Player("O");
+        this.player1 = new TicTacToe.Player("X");
+        this.player2 = new TicTacToe.Player("O");
         this.currentPlayer = null;
     }
 
@@ -22,7 +20,7 @@ class Game {
             while(!validSize) {
                 try {
                     boardSize = prompt("Please enter a number for board size: ");
-                    board = new Board(boardSize);
+                    board = new TicTacToe.Board(boardSize);
                     validSize = true;
                 }
                 catch(error) {
@@ -30,14 +28,13 @@ class Game {
                 }
             }
         } else {
-            board = new Board(boardSize);
+            board = new TicTacToe.Board(boardSize);
         }
         return board;
     }
 
     _renderBoard() {
-        console.clear();
-        console.log("\n\n\n\n\n\n\n\n\n\n\n");
+        console.log('\x1Bc');
         let columnString = "| ";
         for (let row of this.board._state) {
             for (let column of row) {
@@ -93,3 +90,6 @@ class Game {
         this.currentPlayer = null;
     }
 }
+
+let game = new Game();
+game.play();
